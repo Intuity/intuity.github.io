@@ -8,11 +8,9 @@
   "includeFork": false,
   "theme": "dark.css",
   "types": [
-   "owner"
+   "all"
   ],
   "twitter": "intuity",
-  "linkedin": "peter-birch-10208857",
-  "medium": null,
-  "dribbble": null
+  "linkedin": "peter-birch-10208857"
  }
 ]
