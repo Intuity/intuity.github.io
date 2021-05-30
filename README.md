@@ -1,2 +1,0 @@
-# intuity.github.io
-Website
