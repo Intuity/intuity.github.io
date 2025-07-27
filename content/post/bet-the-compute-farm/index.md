@@ -15,14 +15,13 @@ tags:
 weight: 1
 ---
 
-If you were to found a startup today that needed a significant amount of compute
-for running build and test, you'd likely look towards one of the major cloud
+If you were to found a startup today that needed a significant amount of compute 
+for running builds and tests, you'd likely look toward one of the major cloud 
 providers. With their attractive startup credit packages, discounted rates for 
-new companies, and seemingly endless compute resource - its definitely an easy 
-choice and one that can grow with your needs over time and for small, ephemeral 
-VMs it likely makes a lot of sense. However, this model of compute doesn't work
-for every workload and can provide strong incentive to consider on-premise 
-compute.
+new companies, and seemingly endless compute resources, it’s definitely an easy 
+choice — one that can scale with your needs over time. For small, ephemeral VMs, 
+this model likely makes a lot of sense. However, this approach doesn’t work for 
+every workload, and it provides a strong incentive to consider on-premise compute.
 
 ## Setting the Scene
 
@@ -51,10 +50,11 @@ simulation, design rule checking (DRC), and more the compute needs continue to
 mount up and each step in the process can require huge CPU, RAM, and storage 
 requirements.
 
-Focussing in on one workload, a number of vendor tools offer synthesis, PnR, 
-timing, and power analysis in an integrated workflow. As both the tools and 
-technologies are protected by strict NDAs, the numbers here must be deliberately
-vague:
+## Focussing on Workloads
+
+A number of vendor tools offer synthesis, PnR, timing, and power analysis in an 
+integrated workflow. As both the tools and technologies are protected by strict 
+NDAs, the numbers here must be deliberately vague:
 
  * Modern process design kits (PDKs) require around a terabyte of disk space,
    and must be kept on fast, networked storage to avoid bottlenecking down jobs 
@@ -64,14 +64,14 @@ vague:
    consuming 8 cores and 64 GB RAM is not unreasonable;
  * Execution time for a single pass can take around a day of uninterrupted compute.
 
-Of course, as your team grows and gets busier you won't be running just one of 
-these such jobs - you'll be running as many passes possible as the design is 
-refined to optimise timing, power consumption, and area. As your overall project
-grows, you'll be running multiple such trials in parallel and introducing 
-progressively larger assemblies of these building blocks. Many modern ASICs are
-approaching reticle size - Graphcore's Mk2 processor (now a few years old) clocked
-in at a record-setting 59.4 billion transistors, or roughly 15 billion gates, 
-15,000 times larger than the 1 million gate design considered above.
+As your team grows and gets busier you won't be running just one of these such 
+jobs - you'll be running as many passes possible as the design is refined to 
+optimise timing, power consumption, and area. As your overall project grows, 
+you'll be running multiple such trials in parallel and introducing progressively 
+larger assemblies of these building blocks. Many modern ASICs are approaching 
+reticle size - Graphcore's Mk2 processor (now a few years old) clocked in at a 
+record-setting 59.4 billion transistors, or roughly 15 billion gates, 15,000 
+times larger than the 1 million gate design considered above.
 
 ## Building Compute
 
@@ -127,21 +127,23 @@ complete in less than half an hour.
     <img src="opentitan_runtime.png" width="70%" />
 </div>
 
-Say that our target is to run this test suite in under an hour and assuming that 
-these jobs all follow our rule of thumb (1 CPU core and 4 GB RAM per simulation)
-then, using a [simple bin packing algorithm](./packing.py), we'll need 179 cores 
-and 716 GB of RAM. If we have a team of 10 engineers, then with regular PRs and
-overnight testing it would not be unreasonable to assume we'll need this capacity
-almost constantly.
+### Cost Considerations
+
+If we want to run this test suite in under an hour (assuming that all jobs follow 
+our rule of thumb of 1 CPU core and 4 GB RAM per simulation) then, using a 
+[simple bin packing algorithm](./packing.py), we'll need 179 cores  and 716 GB of 
+RAM. If we have a team of 10 engineers, then with regular PRs and overnight 
+testing it would not be unreasonable to assume we'll need this capacity almost 
+constantly.
 
 So how much would this cost us in the cloud, opting towards fewer large machines
 so that we can also use them for our other jobs such as synthesis. Each box here
 is provisioned as 32 vCPU, 128 GB RAM, with 1 TB storage, located in a London
 data center to comply with various export controls:
 
- * Google Cloud - $1,355/month or $661/month with a 3 year commitment (machine 
+ * **Google Cloud:** $1,355/month or $661/month with a 3 year commitment (machine 
    configuration `n4-standard-32`);
- * AWS - $1,037/month or $603/month with a 3 year commitment (machine configuration
+ * **AWS:** $1,037/month or $603/month with a 3 year commitment (machine configuration
    `m6g.8xlarge` with shared instance tenancy).
 
 So we'll need 6 of these instances for our theoretical compute load, running a 
@@ -230,41 +232,41 @@ are dated from August 2024 when we considered moving to the cloud.*
 ### Flaws and Bottlenecks
 
 No deployment is perfect, and over the 2 years we worked with the compute farm 
-certain flaws and bottlenecks were apparent.
+certain flaws and bottlenecks became apparent:
 
-The first of these was the performance of the shared storage - the ZFS storage 
-array was configured as RAID-Z2 with one SSD providing a fast ZFS Log drive and
-the other an L2ARC read cache. In truth, this offered a surprising level of 
-performance for storage backed by spinning rust, but could be swamped if too
-many LLVM builds kicked off simultaneously leading to a slow down across the
-pool due to the nature of the small random file accesses in the compilation. 
+ 1. **Performance of the shared storage:** The ZFS storage array was configured 
+    as RAID-Z2 with one SSD providing a fast ZFS Log drive and the other an 
+    L2ARC read cache. In truth, this offered a surprising level of performance 
+    for storage backed by spinning rust, but could be swamped if too many LLVM 
+    builds kicked off simultaneously leading to a slow down across the pool due 
+    to the nature of the small random file accesses in the compilation. 
 
-In hindsight, it would have been better to deploy either a fully SSD based storage
-array or a tiered solution where SSD storage supported active working directories
-for compilation, simulations, etc and bulk data storage was provided by a HDD
-array. Such tiered solutions are supported by [TrueNAS](https://www.truenas.com/m-series)
-and can offer cost-effective high performance storage without compromising on
-capacity.
+    In hindsight, it would have been better to deploy either a fully SSD based 
+    storage array or a tiered solution where SSD storage supported active working 
+    directories for compilation, simulations, etc and bulk data storage was 
+    provided by a HDD array. Such tiered solutions are supported by 
+    [TrueNAS](https://www.truenas.com/m-series) and can offer cost-effective 
+    high-performance storage without compromising on capacity.
 
-We also discovered that desktop PC cases are really not ideal for large numbers
-of harddrives - they're fiddly to work in and don't offer sufficient airflow to
-keep large numbers of drives cool, and we experienced a few drive failures as a
-result. Instead, this is an area where deploying a more enterprise focussed 
-rack-mounted solution would have been the better choice (although more costly).
+ 2. **Desktop PC cases:** PC cases really not ideal for large numbers of harddrives 
+    as they're fiddly to work in and don't offer sufficient airflow to keep large 
+    numbers of drives cool, and we experienced a few drive failures as a result. 
+    Instead, this is an area where deploying a more enterprise focussed 
+    rack-mounted solution would have been the better choice (although more costly).
 
-The second issue was a lack of out-of-band management (IPMI/LOM), which is a
-common feature of most server platforms allowing you to access the machine at a
-low-level if the operating system locks up. We mostly addressed this issue by
-running Proxmox as a hypervisor on all systems, which provided most of the 
-benefits. However, there are ways to address this as a number of standalone
-IP-KVM products exist that offer the same features - some examples are:
+ 3. **Lack of out-of-band management (IPMI/LOM):** This is a common feature of 
+    most server platforms allowing you to access the machine at a low-level if 
+    the operating system locks up. We mostly addressed this issue by running 
+    Proxmox as a hypervisor on all systems, which provided most of the  benefits. 
+    However, there are ways to address this as a number of standalone IP-KVM 
+    products exist that offer the same features - some examples are:
 
- * PiKVM - an IP-KVM built around a Raspberry Pi 
-   [£315 at The Pi Hut](https://thepihut.com/products/pikvm-v4-plus)
- * TinyPilot Voyager 2a
-   [$400 direct from their site](https://tinypilotkvm.com/product/tinypilot-voyager2a)
- * JetKVM - a glossy little IP-KVM
-   [$69 via KickStarter](https://www.kickstarter.com/projects/jetkvm/jetkvm)
+      * PiKVM - an IP-KVM built around a Raspberry Pi 
+        [£315 at The Pi Hut](https://thepihut.com/products/pikvm-v4-plus)
+      * TinyPilot Voyager 2a
+        [$400 direct from their site](https://tinypilotkvm.com/product/tinypilot-voyager2a)
+      * JetKVM - a glossy little IP-KVM
+        [$69 via KickStarter](https://www.kickstarter.com/projects/jetkvm/jetkvm)
 
 ### Enterprise Grade
 
@@ -309,4 +311,3 @@ Reach out to me on [GitHub](https://github.com/Intuity) or
 ## Attributions
 
 Photo by [İsmail Enes Ayhan](https://unsplash.com/@ismailenesayhan?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash) on [Unsplash](https://unsplash.com/photos/brown-wooden-hallway-with-gray-metal-doors-lVZjvw-u9V8?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash)
-      
