@@ -164,7 +164,7 @@ robust backup strategy, and its a fallacy that this somehow comes for free.
 
 ### What We Built
 
-We purchased eight high-end desktops each equipped with an AMD Ryzen 9 7960x CPU, 
+We purchased eight high-end desktops each equipped with an AMD Ryzen 9 7950x CPU, 
 128 GB of RAM, and 4 TB of NVMe SSD storage. Opting for consumer gear may seem
 like an odd choice, however these CPUs offer much higher per-core performance
 compared to their server-focussed counterparts - from Geekbench 6 scores:
