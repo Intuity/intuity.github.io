@@ -197,7 +197,7 @@ Not all 8 systems were used for compute - one system was setup to host services
 such as Jenkins CI and GitLab for version control, while a second system was 
 configured as a storage node so had the following additional components:
 
-* 8x 12 TB Seagate IronWolf Pro NAS drives (these do well in 
+* 8x 16 TB Seagate IronWolf Pro NAS drives (these do well in 
   [Backblaze’s storage metrics](https://www.backblaze.com/blog/backblaze-drive-stats-for-q2-2023)): 
   8x£230 = £1,840.00 (Amazon as of 26/08/24)
 * Broadcom SAS-3008 HBA controller £110.99 (https://amzn.eu/d/4E5r0iC)
