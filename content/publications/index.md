@@ -1,6 +1,12 @@
 ---
 title: Talks and Papers
 links:
+  - title: Just how far can you go with FOSS?
+    description: >
+      Presentation from ORConf 2025 reflecting on advocation for open source tools
+      and flows in commercial silicon environments, and lessons learnt in putting
+      an open methodology at the heart of a startup.
+    website: ./pdfs/orconf_2025_slides.pdf
   - title: Forastero - cocotb testbenches with batteries included (Video)
     description: >
       Recording of my presentation at ORConf 2024 on Forastero, a testbench
