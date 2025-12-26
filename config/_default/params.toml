@@ -6,7 +6,7 @@ favicon = "/favicon.png"
 
 [footer]
 since = 2020
-customText = ""
+customText = "The views expressed on this blog are the author’s personal views and should not be attributed to any other person, including that of their employer."
 
 [dateFormat]
 published = "Jan 02, 2006"
